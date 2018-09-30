@@ -2,7 +2,6 @@ package MainPackage;
 
 public class Main {
 	
-	//TODO
 	public static String[][] GenGrid(){
 		int m = ((int) (Math.random()*6)) + 4;
 		int n = ((int) (Math.random()*6)) + 4;
@@ -84,11 +83,6 @@ public class Main {
 		return false;
 	}
 	
-	
-	//TODO
-	public static void search(){
-		
-	}
 	
 	
 	public static void main(String[] args) {

@@ -7,7 +7,7 @@ public abstract class GenericSearch {
 	public State initialState;
 	
 	// Returns set of space reachable from the input state.
-	public State[] stateSpace(State state) {
+	public State[] stateSpace(State state, String[][] grid) {
 		return null;	
 	}
 	
