@@ -23,7 +23,7 @@ public class SaveWestros extends GenericSearch {
 		State state = node.state;
 		if (state.orientation.compareTo("L") == 0) {
 			// Move Forward Command
-			if (noObstacles(grid, state.whiteWalkersPositions, state.i, state.j - 1)) {
+			if (checkObstacles(grid, state.whiteWalkersPositions, state.i, state.j - 1)) {
 
 				int dragonGlass = checkDragonStone(state.i, state.j - 1, grid, state.dragonGlass);
 
@@ -55,7 +55,7 @@ public class SaveWestros extends GenericSearch {
 
 			// Move Forward Command
 
-			if (noObstacles(grid, state.whiteWalkersPositions, state.i + 1, state.j)) {
+			if (checkObstacles(grid, state.whiteWalkersPositions, state.i + 1, state.j)) {
 				int dragonGlass = checkDragonStone(state.i + 1, state.j, grid, state.dragonGlass);
 				node1.state = new State(state.i + 1, state.j, "D", state.whiteWalkersLeft, dragonGlass,
 						state.whiteWalkersPositions);
@@ -87,7 +87,7 @@ public class SaveWestros extends GenericSearch {
 
 			// Move Forward Command
 
-			if (noObstacles(grid, state.whiteWalkersPositions, state.i, state.j + 1)) {
+			if (checkObstacles(grid, state.whiteWalkersPositions, state.i, state.j + 1)) {
 				int dragonGlass = checkDragonStone(state.i, state.j + 1, grid, state.dragonGlass);
 				node1.state = new State(state.i, state.j + 1, "R", state.whiteWalkersLeft, dragonGlass,
 						state.whiteWalkersPositions);
@@ -119,7 +119,7 @@ public class SaveWestros extends GenericSearch {
 
 			// Move Forward Command
 
-			if (noObstacles(grid, state.whiteWalkersPositions, state.i - 1, state.j)) {
+			if (checkObstacles(grid, state.whiteWalkersPositions, state.i - 1, state.j)) {
 				int dragonGlass = checkDragonStone(state.i - 1, state.j, grid, state.dragonGlass);
 				node1.state = new State(state.i - 1, state.j, "U", state.whiteWalkersLeft, dragonGlass,
 						state.whiteWalkersPositions);
@@ -193,7 +193,7 @@ public class SaveWestros extends GenericSearch {
 
 	}
 
-	private boolean noObstacles(String[][] grid, Position[] positions, int i, int j) {
+	private boolean checkObstacles(String[][] grid, Position[] positions, int i, int j) {
 		if (!checkPosition(i, j, grid))
 			return false;
 		for (Position pos : positions) {
