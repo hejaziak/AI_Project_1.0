@@ -1,5 +1,7 @@
 package MainPackage;
 
+import java.util.ArrayList;
+
 public class Main {
 	
 	public static String[][] GenGrid(){
@@ -83,12 +85,33 @@ public class Main {
 		return false;
 	}
 	
-	
+	public static String[][] TestGrid(){
+		String [][]grid = {
+				{"~","O","W","~","~"},
+				{"~","~","~","~","~"},
+				{"~","W","~","W","~"},
+				{"~","~","O","~","O"},
+				{"D","~","~","~","J"},
+				};
+		return grid;
+	}
 	
 	public static void main(String[] args) {
-		String[][] grid = GenGrid();
+		String[][] grid = TestGrid();
+		SaveWestros problem = new SaveWestros(4);
 		printGrid(grid);
-		
+		Node g = problem.UC(grid,3);
+		ArrayList<String>s = new ArrayList<String>();
+		while(g.parentNode!=null)
+		{
+			s.add(g.operator+"");
+			g=g.parentNode;
+		}
+		System.out.print ("First the agent: ");
+		for(int i = s.size()-1;i>=0;i--) {
+			System.out.println(s.get(i));
+		}
+		System.out.println("GOAL REACHED !!");
 	}
 
 }
