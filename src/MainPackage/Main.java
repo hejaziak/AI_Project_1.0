@@ -91,7 +91,8 @@ public class Main {
 		String[][] grid = TestGrid();
 		printGrid(grid);
 		Node g = problem.UC(grid, 3); // The number of white walkers in the problem
-		return g;
+		Node f  = problem.IDS( grid,3);
+		return f;
 
 	}
 

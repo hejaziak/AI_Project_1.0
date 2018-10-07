@@ -35,8 +35,8 @@ public class SaveWestros extends GenericSearch {
 		// Move Forward Command
 		if (checkObstacles(grid, state.whiteWalkersPositions, forwardI, forwardJ)) {
 			int dragonGlass = checkDragonStone(forwardI, forwardJ, grid, state.dragonGlass);
-			node1.state = new State(forwardI, forwardJ, state.orientation, state.whiteWalkersLeft, dragonGlass,
-					state.whiteWalkersPositions);
+			node1.state = new State(forwardI, forwardJ, state.orientation, state.whiteWalkersLeft,
+					dragonGlass, state.whiteWalkersPositions);
 			results.add(node1);
 		}
 
@@ -53,8 +53,8 @@ public class SaveWestros extends GenericSearch {
 		//Check If the agent still have any dragon glass
 		if (state.dragonGlass > 0) {
 			Position[] newPositions = killWhiteWalkers(state.whiteWalkersPositions, state.i, state.j);
-			node4.state = new State(state.i, state.j, state.orientation, newPositions.length, state.dragonGlass - 1,
-					newPositions);
+			node4.state = new State(state.i, state.j, state.orientation, newPositions.length,
+					state.dragonGlass - 1, newPositions);
 			results.add(node4);
 		}
 		return results;
@@ -99,7 +99,8 @@ public class SaveWestros extends GenericSearch {
 
 	}
 
-	//Check if the position required contains any white walkers or obstacles. If there is neither the agent is aloud to pass.
+	// Check if the position required contains any white walkers or obstacles.
+	// If there is neither the agent is aloud to pass.
 	private boolean checkObstacles(String[][] grid, Position[] whiteWalkers, int i, int j) {
 		if (!checkPosition(i, j, grid))
 			return false;
@@ -131,7 +132,8 @@ public class SaveWestros extends GenericSearch {
 			int x = whiteWalker.x;
 			int y = whiteWalker.y;
 
-			if (!((x - 1 == i && y == j) || (x + 1 == i && y == j) || (x == i && y == j + 1) || (x == i && y == j - 1)))
+			if (!((x - 1 == i && y == j) || (x + 1 == i && y == j) ||
+					(x == i && y == j + 1) || (x == i && y == j - 1)))
 				temp.add(whiteWalker);
 
 		}
@@ -167,11 +169,52 @@ public class SaveWestros extends GenericSearch {
 	public static void ID(String[][] grid, Node node) {
 		// TODO
 	}
+//	
+//	public  Node IDHelper(String[][] grid, Node node, int level) {
+//		if(goalTest(node.state)) {
+//			return node;
+//		}
+//	}
+	
+	 public Node DLS(Node node, int depth, String[][] grid) {
+	        if (depth == 0 && goalTest(node.state)) {
+	            return node;
+	        }
+	        if (depth > 0) {
+	            for (Node child : expand(node,grid)) {
+	                Node found = DLS(child, depth - 1,grid);
+	                if (found != null) {
+	                    return found;
+	                }
+	            }
+	        }
+	        return null;
+	    }
+	 
+	  public Node IDS(String[][] grid, int whiteWalkersLeft ) {
+		  Position[] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
+		  State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft,
+					whiteWalkersPositions);
+			Node initialNode = new Node(initialState);
+			
+			
+	        // loops through until a goal node is found
+	        for (int depth = 0; depth < Integer.MAX_VALUE; depth++) {
+	            Node found = DLS(initialNode, depth, grid);
+	            if (found != null) {
+	                return found;
+	            }
+	        }
+	        // this will never be reached as it 
+	        // loops forever until goal is found
+	        return null;
+	    }
 
 	public Node UC(String[][] grid, int whiteWalkersLeft) {
 		PriorityQueue<Node> queue = new PriorityQueue<>();
 		Position[] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
-		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft, whiteWalkersPositions);
+		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft,
+				whiteWalkersPositions);
 		Node InitialNode = new Node(initialState);
 		queue.add(InitialNode);
 		
