@@ -21,131 +21,41 @@ public class SaveWestros extends GenericSearch {
 		Node node4 = new Node(node, Operators.USE_DRAGON_GLASS, node.depth + 1, node.pathCost + 3, null);
 
 		State state = node.state;
-		if (state.orientation.compareTo("L") == 0) {
-			// Move Forward Command
-			if (checkObstacles(grid, state.whiteWalkersPositions, state.i, state.j - 1)) {
-
-				int dragonGlass = checkDragonStone(state.i, state.j - 1, grid, state.dragonGlass);
-
-				node1.state = new State(state.i, state.j - 1, "L", state.whiteWalkersLeft, dragonGlass,
-						state.whiteWalkersPositions);
-				results.add(node1);
-			}
-
-			// Rotate Left Command
-
-			node2.state = new State(state.i, state.j, "D", state.whiteWalkersLeft, state.dragonGlass,
-					state.whiteWalkersPositions);
-			results.add(node2);
-
-			// Rotate Right Command
-
-			node3.state = new State(state.i, state.j, "U", state.whiteWalkersLeft, state.dragonGlass,
-					state.whiteWalkersPositions);
-			results.add(node3);
-
-			if (state.dragonGlass > 0) {
-				Position[] newPositions = killWhiteWalkers(state.whiteWalkersPositions, state.i, state.j);
-				node4.state = new State(state.i, state.j, "L", newPositions.length, state.dragonGlass - 1,
-						newPositions);
-				results.add(node4);
-			}
+		int forwardI =0;
+		int forwardJ=0;
+		String leftOrient="";
+		String rightOrient="";
+		switch (state.orientation) {
+		case "L":forwardI = state.i; forwardJ=state.j-1;leftOrient="D";rightOrient="U";break;
+		case "D":forwardI = state.i+1; forwardJ=state.j;leftOrient="R";rightOrient="L";break;
+		case "R":forwardI = state.i; forwardJ=state.j+1;leftOrient="U";rightOrient="D";break;
+		case "U":forwardI = state.i-1; forwardJ=state.j;leftOrient="L";rightOrient="R";break;
 		}
-		if (state.orientation.compareTo("D") == 0) {
-
-			// Move Forward Command
-
-			if (checkObstacles(grid, state.whiteWalkersPositions, state.i + 1, state.j)) {
-				int dragonGlass = checkDragonStone(state.i + 1, state.j, grid, state.dragonGlass);
-				node1.state = new State(state.i + 1, state.j, "D", state.whiteWalkersLeft, dragonGlass,
-						state.whiteWalkersPositions);
-				results.add(node1);
-			}
-
-			// Rotate Left Command
-
-			node2.state = new State(state.i, state.j, "R", state.whiteWalkersLeft, state.dragonGlass,
+		
+		// Move Forward Command
+		if (checkObstacles(grid, state.whiteWalkersPositions, forwardI, forwardJ)) {
+			int dragonGlass = checkDragonStone(forwardI, forwardJ, grid, state.dragonGlass);
+			node1.state = new State(forwardI, forwardJ, state.orientation, state.whiteWalkersLeft, dragonGlass,
 					state.whiteWalkersPositions);
-			results.add(node2);
-
-			// Rotate Right Command
-
-			node3.state = new State(state.i, state.j, "L", state.whiteWalkersLeft, state.dragonGlass,
-					state.whiteWalkersPositions);
-			results.add(node3);
-
-			// Use DragonGlass Command
-
-			if (state.dragonGlass > 0) {
-				Position[] newPositions = killWhiteWalkers(state.whiteWalkersPositions, state.i, state.j);
-				node4.state = new State(state.i, state.j, "D", newPositions.length, state.dragonGlass - 1,
-						newPositions);
-				results.add(node4);
-			}
+			results.add(node1);
 		}
-		if (state.orientation.compareTo("R") == 0) {
 
-			// Move Forward Command
+		// Rotate Left Command
+		node2.state = new State(state.i, state.j, leftOrient, state.whiteWalkersLeft, state.dragonGlass,
+				state.whiteWalkersPositions);
+		results.add(node2);
 
-			if (checkObstacles(grid, state.whiteWalkersPositions, state.i, state.j + 1)) {
-				int dragonGlass = checkDragonStone(state.i, state.j + 1, grid, state.dragonGlass);
-				node1.state = new State(state.i, state.j + 1, "R", state.whiteWalkersLeft, dragonGlass,
-						state.whiteWalkersPositions);
-				results.add(node1);
-			}
+		// Rotate Right Command
+		node3.state = new State(state.i, state.j, rightOrient, state.whiteWalkersLeft, state.dragonGlass,
+				state.whiteWalkersPositions);
+		results.add(node3);
 
-			// Rotate Left Command
-
-			node2.state = new State(state.i, state.j, "U", state.whiteWalkersLeft, state.dragonGlass,
-					state.whiteWalkersPositions);
-			results.add(node2);
-
-			// Rotate Right Command
-
-			node3.state = new State(state.i, state.j, "D", state.whiteWalkersLeft, state.dragonGlass,
-					state.whiteWalkersPositions);
-			results.add(node3);
-
-			// Use DragonGlass Command
-
-			if (state.dragonGlass > 0) {
-				Position[] newPositions = killWhiteWalkers(state.whiteWalkersPositions, state.i, state.j);
-				node4.state = new State(state.i, state.j, "R", newPositions.length, state.dragonGlass - 1,
-						newPositions);
-				results.add(node4);
-			}
-		}
-		if (state.orientation.compareTo("U") == 0) {
-
-			// Move Forward Command
-
-			if (checkObstacles(grid, state.whiteWalkersPositions, state.i - 1, state.j)) {
-				int dragonGlass = checkDragonStone(state.i - 1, state.j, grid, state.dragonGlass);
-				node1.state = new State(state.i - 1, state.j, "U", state.whiteWalkersLeft, dragonGlass,
-						state.whiteWalkersPositions);
-				results.add(node1);
-			}
-
-			// Rotate Left Command
-
-			node2.state = new State(state.i, state.j, "L", state.whiteWalkersLeft, state.dragonGlass,
-					state.whiteWalkersPositions);
-			results.add(node2);
-
-			// Rotate Right Command
-
-			node3.state = new State(state.i, state.j, "R", state.whiteWalkersLeft, state.dragonGlass,
-					state.whiteWalkersPositions);
-			results.add(node3);
-
-			// Use DragonGlass Command
-
-			if (state.dragonGlass > 0) {
-				Position[] newPositions = killWhiteWalkers(state.whiteWalkersPositions, state.i, state.j);
-				node4.state = new State(state.i, state.j, "U", newPositions.length, state.dragonGlass - 1,
-						newPositions);
-				results.add(node4);
-			}
+		//Check If the agent still have any dragon glass
+		if (state.dragonGlass > 0) {
+			Position[] newPositions = killWhiteWalkers(state.whiteWalkersPositions, state.i, state.j);
+			node4.state = new State(state.i, state.j, state.orientation, newPositions.length, state.dragonGlass - 1,
+					newPositions);
+			results.add(node4);
 		}
 		return results;
 
@@ -153,12 +63,9 @@ public class SaveWestros extends GenericSearch {
 
 	@Override
 	public boolean goalTest(State state) {
-
 		super.goalTest(state);
-
 		if (state.whiteWalkersLeft == 0)
 			return true;
-
 		return false;
 
 	}
@@ -172,7 +79,6 @@ public class SaveWestros extends GenericSearch {
 					positions[k] = new Position(i, j);
 					k++;
 				}
-
 			}
 		}
 		return positions;
@@ -193,10 +99,11 @@ public class SaveWestros extends GenericSearch {
 
 	}
 
-	private boolean checkObstacles(String[][] grid, Position[] positions, int i, int j) {
+	//Check if the position required contains any white walkers or obstacles. If there is neither the agent is aloud to pass.
+	private boolean checkObstacles(String[][] grid, Position[] whiteWalkers, int i, int j) {
 		if (!checkPosition(i, j, grid))
 			return false;
-		for (Position pos : positions) {
+		for (Position pos : whiteWalkers) {
 			if (pos.x == i && pos.y == j)
 				return false;
 		}
@@ -207,6 +114,7 @@ public class SaveWestros extends GenericSearch {
 
 	}
 
+	//Check if current Cell contains a dragon stone so we can refill the agent's dragon glass.
 	private int checkDragonStone(int i, int j, String[][] grid, int dragonGlass) {
 		if (grid[i][j] == "D") {
 			return dragonGlassCapacity;
@@ -215,7 +123,8 @@ public class SaveWestros extends GenericSearch {
 			return dragonGlass;
 
 	}
-
+	
+	//Check if there is any whitewalkers in the cells neighbouring the agent when the dragon glass is used.
 	private Position[] killWhiteWalkers(Position[] whiteWalkersLeft, int i, int j) {
 		ArrayList<Position> temp = new ArrayList<Position>();
 		for (Position whiteWalker : whiteWalkersLeft) {
@@ -234,6 +143,7 @@ public class SaveWestros extends GenericSearch {
 
 	}
 
+	//Check if the position the agent wants to walk to is a valid position inside the grid.
 	private boolean checkPosition(int i, int j, String[][] grid) {
 		int n = grid.length;
 		int m = grid[0].length;
@@ -259,38 +169,23 @@ public class SaveWestros extends GenericSearch {
 	}
 
 	public Node UC(String[][] grid, int whiteWalkersLeft) {
-		// TODO
-		// Initalize the Queue with the initial state and loop over the head of the
-		// queue
-		Comparator<Node> NodeComparator = new Comparator<Node>() {
-			@Override
-			public int compare(Node n1, Node n2) {
-				if (n1.pathCost < n2.pathCost)
-					return -1;
-				else if (n1.pathCost > n2.pathCost)
-					return 1;
-				else
-					return 1;
-
-			}
-		};
 		PriorityQueue<Node> queue = new PriorityQueue<>();
 		Position[] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
 		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft, whiteWalkersPositions);
 		Node InitialNode = new Node(initialState);
 		queue.add(InitialNode);
+		
 		while (true) {
 			if (queue.isEmpty())
 				return null;
-
 			Node node = queue.remove();
 			if (goalTest(node.state))
 				return node;
 			queue = UCExpand(node, queue, grid);
-
 		}
 	}
 
+	//An intermediate function to call the expand function and add it's results to the priority queue.
 	private PriorityQueue<Node> UCExpand(Node node, PriorityQueue<Node> queue, String[][] grid) {
 		ArrayList<Node> nodes = expand(node, grid);
 		for (Node n : nodes) {
@@ -300,6 +195,7 @@ public class SaveWestros extends GenericSearch {
 		return queue;
 	}
 
+	//A Helper function to print the priority queue.
 	private void UCPrintQueue(PriorityQueue<Node> queue) {
 		PriorityQueue<Node> copy = new PriorityQueue<Node>(queue);
 		while (!copy.isEmpty())
