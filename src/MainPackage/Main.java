@@ -90,9 +90,11 @@ public class Main {
 	public static Node test(SaveWestros problem) {
 		String[][] grid = TestGrid();
 		printGrid(grid);
-		Node g = problem.UC(grid, 3); // The number of white walkers in the problem
-		Node f  = problem.IDS( grid,3);
-		return f;
+		Node UCres = problem.UC(grid, 3); // The number of white walkers in the problem
+		Node IDSres = problem.IDS(grid,3);
+		Node BFSres = problem.BFS(grid,3);
+//		Node DFSres = problem.DFS(grid, 3); 
+		return BFSres;
 
 	}
 

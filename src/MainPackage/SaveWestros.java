@@ -1,9 +1,9 @@
 package MainPackage;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.Stack;
 
 public class SaveWestros extends GenericSearch {
 
@@ -158,12 +158,57 @@ public class SaveWestros extends GenericSearch {
 	 * - The number of chosen nodes
 	 */
 
-	public static void BFS(String[][] grid, Node node) {
-		// TODO
+	public  Node BFS(String[][] grid, int whiteWalkersLeft ) {
+		
+		LinkedList<Node> queue = new LinkedList<>();
+		Position [] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
+		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft,
+				whiteWalkersPositions);
+		Node initialNode = new Node(initialState);
+		ArrayList<Node> explored = new ArrayList<>();
+		
+		queue.add(initialNode);
+		explored.add(initialNode);
+		
+		while(!queue.isEmpty()) {
+			Node current = queue.remove();
+			if(goalTest(current.state)) {
+				return current;
+			}
+			else {
+	            for (Node child : expand(current,grid)) {
+	            	queue.add(child);
+	            }	
+			}
+		}
+		return null;
+		
+		
 	}
 
-	public static void DFS(String[][] grid, Node node) {
-		// TODO
+	public  Node DFS(String[][] grid, int whiteWalkersLeft ) {
+		
+		Stack<Node> stack = new Stack<>();
+		Position [] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
+		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft,
+				whiteWalkersPositions);
+		Node initialNode = new Node(initialState);
+		stack.push(initialNode);
+		
+		while(!stack.isEmpty()) {
+			Node current = stack.pop();
+			
+			if(goalTest(current.state)) {
+				return current;
+			}
+			else {
+	            for (Node child : expand(current,grid)) {
+	            	stack.push(child);
+	            }	
+			}
+		}
+		return null;
+
 	}
 
 	public static void ID(String[][] grid, Node node) {
