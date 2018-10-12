@@ -82,15 +82,15 @@ public class Main {
 		String[][] grid = { { "~", "O", "W", "~", "~" }, 
 							{ "~", "~", "~", "~", "~" }, 
 							{ "~", "W", "~", "W", "~" },
-							{ "~", "~", "O", "~", "O" }, 
-							{ "D", "~", "~", "~", "J" }, };
+							{ "~", "~", "~", "~", "D" }, 
+							{ "~", "~", "~", "~", "J" }, };
 		return grid;
 	}
 
 	public static Node test(SaveWestros problem) {
 		String[][] grid = TestGrid();
 		printGrid(grid);
-		Node g = problem.UC(grid, 3); // The number of white walkers in the problem
+		Node g = problem.GR1(grid, 3); // The number of white walkers in the problem
 		return g;
 
 	}
