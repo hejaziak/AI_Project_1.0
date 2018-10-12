@@ -79,27 +79,28 @@ public class Main {
 	}
 
 	public static String[][] TestGrid() {
-		String[][] grid = { { "~", "O", "W", "~", "~" }, 
-							{ "~", "~", "~", "~", "~" }, 
-							{ "~", "W", "~", "W", "~" },
-							{ "~", "~", "~", "~", "D" }, 
-							{ "~", "~", "~", "~", "J" }, };
+		String[][] grid = { { "~", "O", "~", "~", "~" }, 
+							{ "O", "W", "~", "~", "~" }, 
+							{ "O", "~", "W", "W", "W" },
+							{ "~", "~", "O", "~", "D" }, 
+							{ "W", "W", "~", "W", "J" }, };
 		return grid;
 	}
 
 	public static Node test(SaveWestros problem) {
 		String[][] grid = TestGrid();
 		printGrid(grid);
-		Node g = problem.UC(grid, 3); // The number of white walkers in the problem
+		Node g = problem.AS1(grid, 7); // The number of white walkers in the problem
 		return g;
 
 	}
 
 	public static void main(String[] args) {
 
-		SaveWestros problem = new SaveWestros(4); // The number of the dragon glass capacity inserted in the problem
+		SaveWestros problem = new SaveWestros(2); // The number of the dragon glass capacity inserted in the problem
 
 		Node node = test(problem);
+		System.out.println(node);
 		while (node.parentNode != null) {
 			System.out.println(node.operator);
 			node = node.parentNode;

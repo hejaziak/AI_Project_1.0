@@ -35,9 +35,13 @@ public class SaveWestros extends GenericSearch {
 				else if (state1.whiteWalkersLeft < state2.whiteWalkersLeft)
 					return -1;
 				else {
-					for (int i = 0; i < state1.whiteWalkersPositions.length; i++) {
-						if (state1.whiteWalkersPositions[i].compareTo(state2.whiteWalkersPositions[i]) != 0)
-							return state1.whiteWalkersPositions[i].compareTo(state2.whiteWalkersPositions[i]);
+					loop: for (Position whiteWalker1 : state1.whiteWalkersPositions) {
+						for (Position whiteWalker2 : state2.whiteWalkersPositions) {
+							if (whiteWalker1.compareTo(whiteWalker2) == 0) {
+								continue loop;
+							}
+						}
+						return -1;
 					}
 					return 0;
 				}
