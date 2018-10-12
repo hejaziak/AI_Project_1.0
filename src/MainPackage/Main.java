@@ -90,7 +90,7 @@ public class Main {
 	public static Node test(SaveWestros problem) {
 		String[][] grid = TestGrid();
 		printGrid(grid);
-		Node g = problem.GR1(grid, 3); // The number of white walkers in the problem
+		Node g = problem.UC(grid, 3); // The number of white walkers in the problem
 		return g;
 
 	}

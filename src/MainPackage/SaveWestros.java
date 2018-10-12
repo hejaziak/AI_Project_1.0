@@ -4,13 +4,46 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.TreeMap;
 
 public class SaveWestros extends GenericSearch {
 
 	int dragonGlassCapacity; // TODO: To change later
+	TreeMap<Node, Integer> map;
 
 	public SaveWestros(int dragonGlassCapacity) {
 		this.dragonGlassCapacity = dragonGlassCapacity;
+		Comparator<Node> nodeComparator = new Comparator<Node>() {
+			@Override
+			public int compare(Node n1, Node n2) {
+				State state1 = n1.state;
+				State state2 = n2.state;
+				if (state1.i > state2.i)
+					return 1;
+				else if (state1.i < state2.i)
+					return -1;
+				else if (state1.j > state2.j)
+					return 1;
+				else if (state1.j < state2.j)
+					return -1;
+				else if (state1.orientation.compareTo(state2.orientation) > 0)
+					return 1;
+				else if (state1.orientation.compareTo(state2.orientation) < 0)
+					return -1;
+				else if (state1.whiteWalkersLeft > state2.whiteWalkersLeft)
+					return 1;
+				else if (state1.whiteWalkersLeft < state2.whiteWalkersLeft)
+					return -1;
+				else {
+					for (int i = 0; i < state1.whiteWalkersPositions.length; i++) {
+						if (state1.whiteWalkersPositions[i].compareTo(state2.whiteWalkersPositions[i]) != 0)
+							return state1.whiteWalkersPositions[i].compareTo(state2.whiteWalkersPositions[i]);
+					}
+					return 0;
+				}
+			}
+		};
+		map = new TreeMap<Node, Integer>(nodeComparator);
 	}
 
 	public ArrayList<Node> expand(Node node, String[][] grid) {
@@ -18,7 +51,7 @@ public class SaveWestros extends GenericSearch {
 		Node node1 = new Node(node, Operators.MOVE_FORWARD, node.depth + 1, node.pathCost + 2, null, 0);
 		Node node2 = new Node(node, Operators.ROTATE_LEFT, node.depth + 1, node.pathCost + 2, null, 0);
 		Node node3 = new Node(node, Operators.ROTATE_RIGHT, node.depth + 1, node.pathCost + 2, null, 0);
-		Node node4 = new Node(node, Operators.USE_DRAGON_GLASS, node.depth + 1, node.pathCost + 3, null, 0);
+		Node node4 = new Node(node, Operators.USE_DRAGON_GLASS, node.depth + 1, node.pathCost + 20, null, 0);
 
 		State state = node.state;
 		int forwardI = 0;
@@ -90,7 +123,6 @@ public class SaveWestros extends GenericSearch {
 			int max = -1;
 			if (whiteWalkersLeft.length == 0) {
 				node.heuristicCost = 0;
-				System.out.println("a7a");
 				continue;
 			}
 			for (Position whiteWalker : whiteWalkersLeft) {
@@ -98,7 +130,6 @@ public class SaveWestros extends GenericSearch {
 						Math.sqrt(Math.pow((i - whiteWalker.x), 2) + Math.pow((j - whiteWalker.y), 2)));
 			}
 			node.heuristicCost = max;
-
 
 		}
 		return nodes;
@@ -248,7 +279,10 @@ public class SaveWestros extends GenericSearch {
 	private PriorityQueue<Node> UCExpand(Node node, PriorityQueue<Node> queue, String[][] grid) {
 		ArrayList<Node> nodes = expand(node, grid);
 		for (Node n : nodes) {
-			queue.add(n);
+			if (!map.containsKey(n)) {
+				map.put(n, 1);
+				queue.add(n);
+			}
 		}
 
 		return queue;
@@ -285,14 +319,14 @@ public class SaveWestros extends GenericSearch {
 			if (queue.isEmpty())
 				return null;
 			Node node = queue.remove();
-			System.out.println(node.operator);
 			if (goalTest(node.state))
 				return node;
 			ArrayList<Node> nodes = expand(node, grid);
 			for (Node n : nodes) {
-				// System.out.println(n.heuristicCost);
-
-				queue.add(n);
+				if (!map.containsKey(n)) {
+					map.put(n, 1);
+					queue.add(n);
+				}
 			}
 		}
 
@@ -329,11 +363,10 @@ public class SaveWestros extends GenericSearch {
 				return node;
 			ArrayList<Node> nodes = expand(node, grid);
 			for (Node n : nodes) {
-				// System.out.println(n.heuristicCost);
-
-				queue.add(n);
-				System.out.println(queue.peek().heuristicCost);
-				System.out.println(queue.size());
+				if (!map.containsKey(n)) {
+					map.put(n, 1);
+					queue.add(n);
+				}
 			}
 		}
 
