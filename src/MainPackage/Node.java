@@ -1,36 +1,34 @@
 package MainPackage;
 
-public class Node  implements Comparable<Node>{
+public class Node {
 
 	public Node parentNode;
 	public Operators operator;
 	public int depth;
 	public int pathCost;
 	public State state;
+	public int heuristicCost;
 
-	public Node(State state) {
+	public Node(State state,int heuristicCost) {
 	 this.state=state;
-	 parentNode = null ;
-	 operator = null; //TODO:Add initial operator ?
-	 depth=0;
-	 pathCost = 0 ;
+	 this.heuristicCost = heuristicCost;
+	 this.parentNode = null ;
+	 this.operator = null; //TODO:Add initial operator ?
+	 this.depth=0;
+	 this.pathCost = 0 ;
+	 
+	 
 	}
 
-	public Node(Node parentNode, Operators operator, int depth, int pathCost, State state) {
+	public Node(Node parentNode, Operators operator, int depth, int pathCost, State state,int heuristicCost) {
 		this.parentNode = parentNode;
 		this.operator = operator;
 		this.depth = depth;
 		this.pathCost = pathCost;
 		this.state = state;
+		this.heuristicCost = heuristicCost;
+		
 	}
 
-	@Override
-	public int compareTo(Node n) {
-		if(pathCost==n.pathCost)
-			return 0 ;
-		else if (pathCost>n.pathCost)
-			return 1;
-		else return -1;
-	}
 
 }

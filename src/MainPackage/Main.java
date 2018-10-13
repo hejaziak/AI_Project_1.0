@@ -79,30 +79,41 @@ public class Main {
 	}
 
 	public static String[][] TestGrid() {
-		String[][] grid = { { "~", "O", "W", "~", "~" }, 
-							{ "~", "~", "~", "~", "~" }, 
-							{ "~", "W", "~", "W", "~" },
-							{ "~", "~", "O", "~", "O" }, 
-							{ "D", "~", "~", "~", "J" }, };
+		String[][] grid = { { "~", "O", "~", "~", "~" }, 
+							{ "O", "W", "~", "~", "~" }, 
+							{ "O", "~", "W", "W", "W" },
+							{ "~", "~", "O", "~", "D" }, 
+							{ "W", "W", "~", "W", "J" }, };
 		return grid;
 	}
 
 	public static Node test(SaveWestros problem) {
 		String[][] grid = TestGrid();
 		printGrid(grid);
-		Node UCres = problem.UC(grid, 3); // The number of white walkers in the problem
-		Node IDSres = problem.IDS(grid,3);
-		Node BFSres = problem.BFS(grid,3);
-//		Node DFSres = problem.DFS(grid, 3); 
-		return BFSres;
+		
+//		Node UCres = problem.UC(grid, 7); // The number of white walkers in the problem
+		Node IDSres = problem.IDS(grid,7);
+		
+//		Node BFSres = problem.BFS(grid,7);
+//		Node DFSres = problem.DFS(grid, 7); 
+
+//		Node AS1res = problem.AS1(grid, 7); // The number of white walkers in the problem
+//		Node GR1res = problem.GR1(grid, 7);
+		
+//		Node AS2res = problem.AS2(grid, 7);
+//		Node GR2res = problem.GR2(grid, 7);
+		
+		return IDSres;
+
 
 	}
 
 	public static void main(String[] args) {
 
-		SaveWestros problem = new SaveWestros(4); // The number of the dragon glass capacity inserted in the problem
+		SaveWestros problem = new SaveWestros(2); // The number of the dragon glass capacity inserted in the problem
 
 		Node node = test(problem);
+		System.out.println(node);
 		while (node.parentNode != null) {
 			System.out.println(node.operator);
 			node = node.parentNode;
