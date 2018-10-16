@@ -2,7 +2,6 @@ package MainPackage;
 
 import java.util.ArrayList;
 
-
 public class SaveWestros extends GenericSearch {
 
 	public int dragonGlassCapacity;

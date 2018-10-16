@@ -21,10 +21,10 @@ public class Main {
 
 		int maxWhiteWalkers = (int) (0.25 * size);
 		int maxObstacles = (int) (0.25 * size);
-
-		int whiteWalkers = (int) (Math.random() * maxWhiteWalkers) + 1;
-		int obstacles = (int) (Math.random() * maxObstacles) + 1;
-		int dragonGlassCapacity = (int) (Math.random() * whiteWalkers) + 1;
+		
+		 int obstacles = (int) (Math.random() * maxObstacles) + 1;
+		 numberOfWhiteWalkers = (int) (Math.random() * maxWhiteWalkers) + 1;
+		 dragonGlassCapacity = (int) (Math.random() * numberOfWhiteWalkers) + 1;
 
 		String[][] grid = new String[m][n];
 
@@ -34,8 +34,8 @@ public class Main {
 			}
 		}
 
-		grid[m - 1][n - 1] = "J";
-		placeElements(grid, "W", whiteWalkers);
+		grid[m - 1][n - 1] = "<J";
+		placeElements(grid, "W", numberOfWhiteWalkers);
 		placeElements(grid, "O", obstacles);
 		placeElements(grid, "D", 1);
 
@@ -96,26 +96,6 @@ public class Main {
 		return grid;
 	}
 
-//	public static Node test(SaveWestros problem) {
-//		String[][] grid = TestGrid();
-//		printGrid(grid);
-//		
-////		Node UCres = problem.UC(grid, 7); // The number of white walkers in the problem
-////		Node IDSres = problem.IDS(grid,7);
-//		
-////		Node BFSres = problem.BFS(grid,7);
-////		Node DFSres = problem.DFS(grid, 7); 
-//
-////		Node AS1res = problem.AS1(grid, 7); // The number of white walkers in the problem
-////		Node GR1res = problem.GR1(grid, 7);
-//		
-////		Node AS2res = problem.AS2(grid, 7);
-////		Node GR2res = problem.GR2(grid, 7);
-//		
-//		//return IDSres;
-//
-//
-//	}
 
 	public static Node UC(GenericSearch problem) {
 		Comparator<Node> pathCostComparator = new Comparator<Node>() {
@@ -456,43 +436,40 @@ public class Main {
 	public static void search(String[][] grid, String strategy, boolean visualize) {
 		// itt should create a new SearchProblem of type SaveWesteros and pass it to the
 		// GeneralSearch method together with the input strategy.
-
+		int counter = 1 ;
 		SaveWestros problem = new SaveWestros(dragonGlassCapacity, numberOfWhiteWalkers, grid);
-
 		Node node = generalSearchProcedure(problem, strategy);
 		Stack<Operators> stack = new Stack<>();
+		if(node==null) {
+			System.out.println("No Solution Could Be Reached In This Grid !!!");
+			return;
+		}
 		while (node.parentNode != null) {
 			stack.add(node.operator);
 			node = node.parentNode;
 
 		}
-		printGrid(grid);
 		System.out.println();
 		while (!stack.isEmpty()) {
 			Operators action = stack.pop();
+			System.out.print("Action "+counter+++": ");
 			System.out.println(action);
 		
 			if(visualize) {
 				grid=Visualize(grid, action.toString());
 				printGrid(grid);
+				System.out.println(new String(new char[40]).replace("\0", "_"));
 				System.out.println();
 			}
 	
 		}
+		System.out.println("★★★★★★★★★★★ All The White Walkers Have Been Killed ★★★★★★★★★★★" );
 
 	}
 
 	public static void main(String[] args) {
 
-		// Testing Purposes
-//		SaveWestros problem = new SaveWestros(2);
-//
-//		Node node = test(problem);
-//		System.out.println(node);
-//		while (node.parentNode != null) {
-//		System.out.println(node.operator);
-//		node = node.parentNode;
-//	}
+
 
 		Comparator<Node> nodeComparator = new Comparator<Node>() {
 			@Override
@@ -529,12 +506,16 @@ public class Main {
 			}
 		};
 		map = new TreeMap<Node, Integer>(nodeComparator);
-		String[][] grid = TestGrid();
+		String[][] grid = GenGrid();
+		System.out.println("The problem is :\n");
+		printGrid(grid);
+		System.out.println(String.format("Number of white walkers: %d Capacity of dragon glass: %d", numberOfWhiteWalkers,dragonGlassCapacity));
+		System.out.println(new String(new char[40]).replace("\0", "_"));
 
-		//printGrid(grid);
-		// Position g =locateJohnSnow(grid);
 
-		search(grid, "AS1", false);
+		search(grid, "AS1", true);
+
+		System.out.println(new String(new char[40]).replace("\0", "_"));
 
 	}
 
