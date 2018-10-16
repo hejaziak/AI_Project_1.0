@@ -1,5 +1,6 @@
 package MainPackage;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -10,7 +11,7 @@ import java.util.TreeMap;
 public class Main {
 	public static int dragonGlassCapacity;
 	public static int numberOfWhiteWalkers;
-
+	public static Position dragonGlassLoc ;
 	public static TreeMap<Node, Integer> map;
 
 	public static String[][] GenGrid() {
@@ -24,12 +25,6 @@ public class Main {
 		int whiteWalkers = (int) (Math.random() * maxWhiteWalkers) + 1;
 		int obstacles = (int) (Math.random() * maxObstacles) + 1;
 		int dragonGlassCapacity = (int) (Math.random() * whiteWalkers) + 1;
-
-//		System.out.println("White walkers: " + whiteWalkers);
-//		System.out.println("Obstacles: " + obstacles);
-//		System.out.println("Capacity: " + dragonGlassCapacity);
-//
-//		System.out.println();
 
 		String[][] grid = new String[m][n];
 
@@ -73,7 +68,9 @@ public class Main {
 			}
 
 			grid[randI][randJ] = type;
-
+			if (type == "D") {
+				dragonGlassLoc = new Position(randI,randJ);
+			}
 		}
 
 		return grid;
@@ -88,10 +85,14 @@ public class Main {
 	}
 
 	public static String[][] TestGrid() {
-		String[][] grid = { { "~", "O", "~", "~", "~" }, { "O", "W", "~", "~", "~" }, { "O", "~", "W", "W", "W" },
-				{ "~", "~", "O", "~", "D" }, { "W", "W", "~", "W", "J" }, };
+		String[][] grid = { { "~", "O", "~", "~", "~" },
+				{ "O", "W", "~", "~", "~" }, 
+				{ "O", "~", "W", "W", "W" },
+				{ "~", "~", "O", "~", "D" }, 
+				{ "W", "W", "~", "W", "<J" }, };
 		dragonGlassCapacity = 3;
 		numberOfWhiteWalkers = 7;
+		dragonGlassLoc = new Position(3,4);
 		return grid;
 	}
 
@@ -368,6 +369,90 @@ public class Main {
 
 	}
 
+	public static Position locateJohnSnow(String[][] grid) {
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[0].length; j++) {
+				if (grid[i][j].length() > 1)
+					return new Position(i, j);
+			}
+
+		}
+		return null;
+	}
+
+	public static String[][] Visualize(String[][]grid,String action) {
+		Position p = locateJohnSnow(grid);
+		String[][]result = new String[grid.length][grid[0].length];
+
+		switch(action) {
+		case "USE_DRAGON_GLASS":result = killWalkers(grid,p.x,p.y);break;
+		case "ROTATE_LEFT":result = rotate(grid,p.x,p.y,"left");break;
+		case "ROTATE_RIGHT":result = rotate(grid,p.x,p.y,"right");break;
+		case "MOVE_FORWARD":result = moveForward(grid,p.x,p.y);break;
+		}
+		if(grid[dragonGlassLoc.x][dragonGlassLoc.y].length()==1)
+			grid[dragonGlassLoc.x][dragonGlassLoc.y]="D"; // incase john snow stepped on it in the previous step
+		return result;
+		
+
+	}
+
+	public static String[][] moveForward(String[][] grid, int i, int j) {
+		String direction = grid[i][j].substring(0, 1);
+
+		switch(direction) {
+		case "v":grid[i+1][j]= grid[i][j];break;
+		case "^":grid[i-1][j]=grid[i][j];break;
+		case "<":grid[i][j-1]=grid[i][j];break;
+		case ">":grid[i][j+1]=grid[i][j];break;
+		}
+		grid[i][j]="~";
+
+		return grid;
+	}
+
+	public static String[][] killWalkers(String[][] grid, int i, int j) {
+		if (checkPosition(i + 1, j, grid) && grid[i+1][j].compareTo("W")==0) 
+			grid[i+1][j]="~";
+		
+		if (checkPosition(i - 1, j, grid) && grid[i-1][j].compareTo("W")==0) 
+			grid[i-1][j]="~";
+		
+		if (checkPosition(i, j + 1, grid) && grid[i][j+1].compareTo("W")==0) 
+			grid[i][j+1]="~";
+		
+		if (checkPosition(i, j - 1, grid) && grid[i][j-1].compareTo("W")==0) 
+			grid[i][j-1]="~";
+		
+		return grid;
+		
+	}
+
+	public static String[][]rotate(String[][] grid, int i, int j, String orientation) {
+		String direction = grid[i][j].substring(0, 1);
+		if((direction.compareTo("^")==0 && orientation.compareTo("left")==0)||(direction.compareTo("v")==0 && orientation.compareTo("right")==0) ) {
+			grid[i][j]="<J";
+		}
+		if((direction.compareTo("<")==0 && orientation.compareTo("left")==0)||(direction.compareTo(">")==0 && orientation.compareTo("right")==0) ) {
+			grid[i][j]="vJ";
+		}
+		if((direction.compareTo("v")==0 && orientation.compareTo("left")==0)||(direction.compareTo("^")==0 && orientation.compareTo("right")==0) ) {
+			grid[i][j]=">J";
+		}
+		if((direction.compareTo(">")==0 && orientation.compareTo("left")==0)||(direction.compareTo("<")==0 && orientation.compareTo("right")==0) ) {
+			grid[i][j]="^J";
+		}
+		return grid;
+		
+	}
+
+	private static boolean checkPosition(int i, int j, String[][] grid) {
+		int n = grid.length;
+		int m = grid[0].length;
+
+		return (i >= 0) && (i < n) && (j >= 0) && (j < m) && grid[i][j].compareTo("W")==0;
+	}
+
 	public static void search(String[][] grid, String strategy, boolean visualize) {
 		// itt should create a new SearchProblem of type SaveWesteros and pass it to the
 		// GeneralSearch method together with the input strategy.
@@ -375,17 +460,32 @@ public class Main {
 		SaveWestros problem = new SaveWestros(dragonGlassCapacity, numberOfWhiteWalkers, grid);
 
 		Node node = generalSearchProcedure(problem, strategy);
-
+		Stack<Operators> stack = new Stack<>();
 		while (node.parentNode != null) {
-			System.out.println(node.operator);
+			stack.add(node.operator);
 			node = node.parentNode;
+
+		}
+		printGrid(grid);
+		System.out.println();
+		while (!stack.isEmpty()) {
+			Operators action = stack.pop();
+			System.out.println(action);
+		
+			if(visualize) {
+				grid=Visualize(grid, action.toString());
+				printGrid(grid);
+				System.out.println();
+			}
+	
 		}
 
 	}
 
 	public static void main(String[] args) {
 
-//		SaveWestros problem = new SaveWestros(2); // The number of the dragon glass capacity inserted in the problem
+		// Testing Purposes
+//		SaveWestros problem = new SaveWestros(2);
 //
 //		Node node = test(problem);
 //		System.out.println(node);
@@ -429,8 +529,12 @@ public class Main {
 			}
 		};
 		map = new TreeMap<Node, Integer>(nodeComparator);
+		String[][] grid = TestGrid();
 
-		search(TestGrid(), "DFS", true);
+		//printGrid(grid);
+		// Position g =locateJohnSnow(grid);
+
+		search(grid, "AS1", false);
 
 	}
 
