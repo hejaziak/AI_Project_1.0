@@ -1,56 +1,38 @@
 package MainPackage;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.TreeMap;
 
 public class SaveWestros extends GenericSearch {
 
-	int dragonGlassCapacity; // TODO: To change later
-	TreeMap<Node, Integer> map;
+	public int dragonGlassCapacity;
+	public int numberOfWhiteWalkers;
+	public String[][] grid;
 
-	public SaveWestros(int dragonGlassCapacity) {
+	public SaveWestros(int dragonGlassCapacity, int numberOfWhiteWalkers, String[][] grid) {
 		this.dragonGlassCapacity = dragonGlassCapacity;
-		Comparator<Node> nodeComparator = new Comparator<Node>() {
-			@Override
-			public int compare(Node n1, Node n2) {
-				State state1 = n1.state;
-				State state2 = n2.state;
-				if (state1.i > state2.i)
-					return 1;
-				else if (state1.i < state2.i)
-					return -1;
-				else if (state1.j > state2.j)
-					return 1;
-				else if (state1.j < state2.j)
-					return -1;
-				else if (state1.orientation.compareTo(state2.orientation) > 0)
-					return 1;
-				else if (state1.orientation.compareTo(state2.orientation) < 0)
-					return -1;
-				else if (state1.whiteWalkersLeft > state2.whiteWalkersLeft)
-					return 1;
-				else if (state1.whiteWalkersLeft < state2.whiteWalkersLeft)
-					return -1;
-				else {
-					loop: for (Position whiteWalker1 : state1.whiteWalkersPositions) {
-						for (Position whiteWalker2 : state2.whiteWalkersPositions) {
-							if (whiteWalker1.compareTo(whiteWalker2) == 0) {
-								continue loop;
-							}
-						}
-						return -1;
-					}
-					return 0;
-				}
-			}
-		};
-		map = new TreeMap<Node, Integer>(nodeComparator);
+
+		this.dragonGlassCapacity = dragonGlassCapacity;
+		this.numberOfWhiteWalkers = numberOfWhiteWalkers;
+		this.grid = grid;
+		this.initialNode = configureInitialNode();
 	}
 
-	public ArrayList<Node> expand(Node node, String[][] grid) {
+	public Node configureInitialNode() {
+		Position[] whiteWalkersPositions = getWhiteWalkersPositions(grid, numberOfWhiteWalkers);
+		State initialState = new State(grid.length - 1, grid[0].length - 1, numberOfWhiteWalkers,
+				whiteWalkersPositions);
+		Node InitialNode = new Node(initialState, 0);
+		return InitialNode;
+
+	}
+
+	public ArrayList<Node> expand(Node node) {
+		return expand(node, 1);
+
+	}
+
+	public ArrayList<Node> expand(Node node, int heuristic) {
+
 		ArrayList<Node> results = new ArrayList<Node>();
 		Node node1 = new Node(node, Operators.MOVE_FORWARD, node.depth + 1, node.pathCost + 2, null, 0);
 		Node node2 = new Node(node, Operators.ROTATE_LEFT, node.depth + 1, node.pathCost + 2, null, 0);
@@ -114,9 +96,11 @@ public class SaveWestros extends GenericSearch {
 					newPositions);
 			results.add(node4);
 		}
-		results = heuristicFunction1(results);
+		if (heuristic == 1)
+			results = heuristicFunction1(results);
+		else
+			results = heuristicFunction2(results);
 		return results;
-
 	}
 
 	public ArrayList<Node> heuristicFunction1(ArrayList<Node> nodes) {
@@ -135,6 +119,15 @@ public class SaveWestros extends GenericSearch {
 			}
 			node.heuristicCost = max;
 
+		}
+		return nodes;
+	}
+
+	public ArrayList<Node> heuristicFunction2(ArrayList<Node> nodes) {
+		for (Node node : nodes) {
+			Position[] whiteWalkersLeft = node.state.whiteWalkersPositions;
+			int heuristic = whiteWalkersLeft.length / 3;
+			node.heuristicCost = heuristic;
 		}
 		return nodes;
 	}
@@ -172,13 +165,8 @@ public class SaveWestros extends GenericSearch {
 		return cost;
 	}
 
-	// TODO
-	public static void search() {
-
-	}
-
-	// Check if the position required contains any white walkers or obstacles. If
-	// there is neither the agent is aloud to pass.
+	// Check if the position required contains any white walkers or obstacles.
+	// If there is neither the agent is aloud to pass.
 	private boolean checkObstacles(String[][] grid, Position[] whiteWalkers, int i, int j) {
 		if (!checkPosition(i, j, grid))
 			return false;
@@ -230,154 +218,6 @@ public class SaveWestros extends GenericSearch {
 		int m = grid[0].length;
 
 		return (i >= 0) && (i < n) && (j >= 0) && (j < m);
-	}
-
-	/**
-	 * Strategy should return: - Representation of the sequence of moves - The cost
-	 * - The number of chosen nodes
-	 */
-
-	public static void BFS(String[][] grid, Node node) {
-		// TODO
-	}
-
-	public static void DFS(String[][] grid, Node node) {
-		// TODO
-	}
-
-	public static void ID(String[][] grid, Node node) {
-		// TODO
-	}
-
-	public Node UC(String[][] grid, int whiteWalkersLeft) {
-		Comparator<Node> pathCostComparator = new Comparator<Node>() {
-			@Override
-			public int compare(Node n1, Node n2) {
-				if (n1.pathCost == n2.pathCost)
-					return 0;
-				else if (n1.pathCost > n2.pathCost)
-					return 1;
-				else
-					return -1;
-			}
-
-		};
-		PriorityQueue<Node> queue = new PriorityQueue<>(pathCostComparator);
-		Position[] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
-		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft, whiteWalkersPositions);
-		Node InitialNode = new Node(initialState, 0);
-		queue.add(InitialNode);
-
-		while (true) {
-			if (queue.isEmpty())
-				return null;
-			Node node = queue.remove();
-			if (goalTest(node.state))
-				return node;
-			queue = UCExpand(node, queue, grid);
-		}
-	}
-
-	// An intermediate function to call the expand function and add it's results to
-	// the priority queue.
-	private PriorityQueue<Node> UCExpand(Node node, PriorityQueue<Node> queue, String[][] grid) {
-		ArrayList<Node> nodes = expand(node, grid);
-		for (Node n : nodes) {
-			if (!map.containsKey(n)) {
-				map.put(n, 1);
-				queue.add(n);
-			}
-		}
-
-		return queue;
-	}
-
-	// A Helper function to print the priority queue.
-	private void UCPrintQueue(PriorityQueue<Node> queue) {
-		PriorityQueue<Node> copy = new PriorityQueue<Node>(queue);
-		while (!copy.isEmpty())
-			System.out.print(copy.remove().operator + "  ");
-
-		System.out.println();
-	}
-
-	public Node GR1(String[][] grid, int whiteWalkersLeft) {
-		Comparator<Node> heuristicComparator = new Comparator<Node>() {
-			@Override
-			public int compare(Node n1, Node n2) {
-				if (n1.heuristicCost == n2.heuristicCost)
-					return 0;
-				else if (n1.heuristicCost > n2.heuristicCost)
-					return 1;
-				else
-					return -1;
-			}
-
-		};
-		PriorityQueue<Node> queue = new PriorityQueue<>(heuristicComparator);
-		Position[] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
-		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft, whiteWalkersPositions);
-		Node InitialNode = new Node(initialState, 0);
-		queue.add(InitialNode);
-		while (true) {
-			if (queue.isEmpty())
-				return null;
-			Node node = queue.remove();
-			if (goalTest(node.state))
-				return node;
-			ArrayList<Node> nodes = expand(node, grid);
-			for (Node n : nodes) {
-				if (!map.containsKey(n)) {
-					map.put(n, 1);
-					queue.add(n);
-				}
-			}
-		}
-
-	}
-
-	public static void GR2(String[][] grid, Node node) {
-		// TODO
-	}
-
-	public Node AS1(String[][] grid, int whiteWalkersLeft) {
-		Comparator<Node> heuristicComparator = new Comparator<Node>() {
-			@Override
-			public int compare(Node n1, Node n2) {
-				if (n1.pathCost + n1.heuristicCost == n2.pathCost + n2.heuristicCost)
-					return 0;
-				else if (n1.pathCost + n1.heuristicCost > n2.pathCost + n2.heuristicCost)
-					return 1;
-				else
-					return -1;
-			}
-
-		};
-		PriorityQueue<Node> queue = new PriorityQueue<>(heuristicComparator);
-		Position[] whiteWalkersPositions = getWhiteWalkersPositions(grid, whiteWalkersLeft);
-		State initialState = new State(grid.length - 1, grid[0].length - 1, whiteWalkersLeft, whiteWalkersPositions);
-		Node InitialNode = new Node(initialState, 0);
-		queue.add(InitialNode);
-		while (true) {
-			if (queue.isEmpty())
-				return null;
-			Node node = queue.remove();
-
-			if (goalTest(node.state))
-				return node;
-			ArrayList<Node> nodes = expand(node, grid);
-			for (Node n : nodes) {
-				if (!map.containsKey(n)) {
-					map.put(n, 1);
-					queue.add(n);
-				}
-			}
-		}
-
-	}
-
-	public static void AS2(String[][] grid, Node node) {
-		// TODO
 	}
 
 }
