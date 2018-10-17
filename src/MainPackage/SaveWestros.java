@@ -7,6 +7,7 @@ public class SaveWestros extends GenericSearch {
 	public int dragonGlassCapacity;
 	public int numberOfWhiteWalkers;
 	public String[][] grid;
+	public int expandedNodes = 0;
 
 	public SaveWestros(int dragonGlassCapacity, int numberOfWhiteWalkers, String[][] grid) {
 		this.dragonGlassCapacity = dragonGlassCapacity;
@@ -100,6 +101,7 @@ public class SaveWestros extends GenericSearch {
 			results = heuristicFunction1(results);
 		else
 			results = heuristicFunction2(results);
+		expandedNodes += results.size();
 		return results;
 	}
 

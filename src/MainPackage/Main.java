@@ -14,6 +14,7 @@ public class Main {
 	public static Position dragonGlassLoc;
 	public static TreeMap<Node, Integer> map;
 
+
 	public static String[][] GenGrid() {
 		int m = ((int) (Math.random() * 6)) + 4;
 		int n = ((int) (Math.random() * 6)) + 4;
@@ -85,12 +86,12 @@ public class Main {
 	}
 
 	public static String[][] TestGrid() {
-		String[][] grid = { { "~", "~", "~", "~", "~", "~" }, { "~", "~", "W", "~", "~", "~" },
-				{ "D", "~", "~", "~", "~", "~" }, { "~", "~", "~", "~", "~", "~" },
-				{ "O", "~", "~", "~", "~", "<J" }, };
-		dragonGlassCapacity = 1;
-		numberOfWhiteWalkers = 1;
-		dragonGlassLoc = new Position(2, 0);
+		String[][] grid = { { "~", "~", "~", "O", "~" }, { "W", "~", "~", "~", "O" },
+				{ "~", "~", "O", "~", "~"}, { "~", "~", "~", "~", "~" },
+				{ "O", "~", "~", "~", "W" },{ "O", "~", "~", "~", "D" },{ "~", "~", "W", "~", "<J" }, };
+		dragonGlassCapacity = 3;
+		numberOfWhiteWalkers = 3;
+		dragonGlassLoc = new Position(5, 4);
 		return grid;
 	}
 
@@ -480,6 +481,10 @@ public class Main {
 			}
 
 		}
+		System.out.println(String.format("Number of expanded nodes: %d ",
+				problem.expandedNodes));
+		System.out.println();
+		System.out.println(new String(new char[40]).replace("\0", "_"));
 		System.out.println("★★★★★★★★★★★ All The White Walkers Have Been Killed ★★★★★★★★★★★");
 
 	}
@@ -527,15 +532,14 @@ public class Main {
 			}
 		};
 		map = new TreeMap<Node, Integer>(nodeComparator);
-		String[][] grid = GenGrid();
+		String[][] grid = TestGrid();
 		System.out.println("The problem is :\n");
 		printGrid(grid);
 		System.out.println(String.format("Number of white walkers: %d Capacity of dragon glass: %d",
 				numberOfWhiteWalkers, dragonGlassCapacity));
 		System.out.println(new String(new char[40]).replace("\0", "_"));
 
-		search(grid, "AS2", true);
-
+		search(grid, "DFS", true);
 
 		System.out.println(new String(new char[40]).replace("\0", "_"));
 
