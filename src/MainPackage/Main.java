@@ -513,7 +513,7 @@ public class Main {
 		System.out.println(new String(new char[40]).replace("\0", "_"));
 
 
-		search(grid, "AS1", true);
+		search(grid, "DFS", true);
 
 		System.out.println(new String(new char[40]).replace("\0", "_"));
 
