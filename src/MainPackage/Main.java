@@ -11,7 +11,7 @@ import java.util.TreeMap;
 public class Main {
 	public static int dragonGlassCapacity;
 	public static int numberOfWhiteWalkers;
-	public static Position dragonGlassLoc ;
+	public static Position dragonGlassLoc;
 	public static TreeMap<Node, Integer> map;
 
 	public static String[][] GenGrid() {
@@ -21,10 +21,10 @@ public class Main {
 
 		int maxWhiteWalkers = (int) (0.25 * size);
 		int maxObstacles = (int) (0.25 * size);
-		
-		 int obstacles = (int) (Math.random() * maxObstacles) + 1;
-		 numberOfWhiteWalkers = (int) (Math.random() * maxWhiteWalkers) + 1;
-		 dragonGlassCapacity = (int) (Math.random() * numberOfWhiteWalkers) + 1;
+
+		int obstacles = (int) (Math.random() * maxObstacles) + 1;
+		numberOfWhiteWalkers = (int) (Math.random() * maxWhiteWalkers) + 1;
+		dragonGlassCapacity = (int) (Math.random() * numberOfWhiteWalkers) + 1;
 
 		String[][] grid = new String[m][n];
 
@@ -69,7 +69,7 @@ public class Main {
 
 			grid[randI][randJ] = type;
 			if (type == "D") {
-				dragonGlassLoc = new Position(randI,randJ);
+				dragonGlassLoc = new Position(randI, randJ);
 			}
 		}
 
@@ -85,17 +85,14 @@ public class Main {
 	}
 
 	public static String[][] TestGrid() {
-		String[][] grid = { { "~", "O", "~", "~", "~" },
-				{ "O", "W", "~", "~", "~" }, 
-				{ "O", "~", "W", "W", "W" },
-				{ "~", "~", "O", "~", "D" }, 
-				{ "W", "W", "~", "W", "<J" }, };
-		dragonGlassCapacity = 3;
-		numberOfWhiteWalkers = 7;
-		dragonGlassLoc = new Position(3,4);
+		String[][] grid = { { "~", "~", "~", "~", "~", "~" }, { "~", "~", "W", "~", "~", "~" },
+				{ "D", "~", "~", "~", "~", "~" }, { "~", "~", "~", "~", "~", "~" },
+				{ "O", "~", "~", "~", "~", "<J" }, };
+		dragonGlassCapacity = 1;
+		numberOfWhiteWalkers = 1;
+		dragonGlassLoc = new Position(2, 0);
 		return grid;
 	}
-
 
 	public static Node UC(GenericSearch problem) {
 		Comparator<Node> pathCostComparator = new Comparator<Node>() {
@@ -266,9 +263,10 @@ public class Main {
 			Node node = queue.remove();
 			if (problem.goalTest(node.state))
 				return node;
-			ArrayList<Node> nodes = problem.expand(node);
+			ArrayList<Node> nodes = problem.expand(node,heuristic);
 			for (Node n : nodes) {
 				if (!map.containsKey(n)) {
+	
 					map.put(n, 1);
 					queue.add(n);
 				}
@@ -360,87 +358,106 @@ public class Main {
 		return null;
 	}
 
-	public static String[][] Visualize(String[][]grid,String action) {
+	public static String[][] Visualize(String[][] grid, String action) {
 		Position p = locateJohnSnow(grid);
-		String[][]result = new String[grid.length][grid[0].length];
+		String[][] result = new String[grid.length][grid[0].length];
 
-		switch(action) {
-		case "USE_DRAGON_GLASS":result = killWalkers(grid,p.x,p.y);break;
-		case "ROTATE_LEFT":result = rotate(grid,p.x,p.y,"left");break;
-		case "ROTATE_RIGHT":result = rotate(grid,p.x,p.y,"right");break;
-		case "MOVE_FORWARD":result = moveForward(grid,p.x,p.y);break;
+		switch (action) {
+		case "USE_DRAGON_GLASS":
+			result = killWalkers(grid, p.x, p.y);
+			break;
+		case "ROTATE_LEFT":
+			result = rotate(grid, p.x, p.y, "left");
+			break;
+		case "ROTATE_RIGHT":
+			result = rotate(grid, p.x, p.y, "right");
+			break;
+		case "MOVE_FORWARD":
+			result = moveForward(grid, p.x, p.y);
+			break;
 		}
-		if(grid[dragonGlassLoc.x][dragonGlassLoc.y].length()==1)
-			grid[dragonGlassLoc.x][dragonGlassLoc.y]="D"; // incase john snow stepped on it in the previous step
+		if (grid[dragonGlassLoc.x][dragonGlassLoc.y].length() == 1)
+			grid[dragonGlassLoc.x][dragonGlassLoc.y] = "D"; // incase john snow stepped on it in the previous step
 		return result;
-		
 
 	}
 
 	public static String[][] moveForward(String[][] grid, int i, int j) {
 		String direction = grid[i][j].substring(0, 1);
 
-		switch(direction) {
-		case "v":grid[i+1][j]= grid[i][j];break;
-		case "^":grid[i-1][j]=grid[i][j];break;
-		case "<":grid[i][j-1]=grid[i][j];break;
-		case ">":grid[i][j+1]=grid[i][j];break;
+		switch (direction) {
+		case "v":
+			grid[i + 1][j] = grid[i][j];
+			break;
+		case "^":
+			grid[i - 1][j] = grid[i][j];
+			break;
+		case "<":
+			grid[i][j - 1] = grid[i][j];
+			break;
+		case ">":
+			grid[i][j + 1] = grid[i][j];
+			break;
 		}
-		grid[i][j]="~";
+		grid[i][j] = "~";
 
 		return grid;
 	}
 
 	public static String[][] killWalkers(String[][] grid, int i, int j) {
-		if (checkPosition(i + 1, j, grid) && grid[i+1][j].compareTo("W")==0) 
-			grid[i+1][j]="~";
-		
-		if (checkPosition(i - 1, j, grid) && grid[i-1][j].compareTo("W")==0) 
-			grid[i-1][j]="~";
-		
-		if (checkPosition(i, j + 1, grid) && grid[i][j+1].compareTo("W")==0) 
-			grid[i][j+1]="~";
-		
-		if (checkPosition(i, j - 1, grid) && grid[i][j-1].compareTo("W")==0) 
-			grid[i][j-1]="~";
-		
+		if (checkPosition(i + 1, j, grid) && grid[i + 1][j].compareTo("W") == 0)
+			grid[i + 1][j] = "~";
+
+		if (checkPosition(i - 1, j, grid) && grid[i - 1][j].compareTo("W") == 0)
+			grid[i - 1][j] = "~";
+
+		if (checkPosition(i, j + 1, grid) && grid[i][j + 1].compareTo("W") == 0)
+			grid[i][j + 1] = "~";
+
+		if (checkPosition(i, j - 1, grid) && grid[i][j - 1].compareTo("W") == 0)
+			grid[i][j - 1] = "~";
+
 		return grid;
-		
+
 	}
 
-	public static String[][]rotate(String[][] grid, int i, int j, String orientation) {
+	public static String[][] rotate(String[][] grid, int i, int j, String orientation) {
 		String direction = grid[i][j].substring(0, 1);
-		if((direction.compareTo("^")==0 && orientation.compareTo("left")==0)||(direction.compareTo("v")==0 && orientation.compareTo("right")==0) ) {
-			grid[i][j]="<J";
+		if ((direction.compareTo("^") == 0 && orientation.compareTo("left") == 0)
+				|| (direction.compareTo("v") == 0 && orientation.compareTo("right") == 0)) {
+			grid[i][j] = "<J";
 		}
-		if((direction.compareTo("<")==0 && orientation.compareTo("left")==0)||(direction.compareTo(">")==0 && orientation.compareTo("right")==0) ) {
-			grid[i][j]="vJ";
+		if ((direction.compareTo("<") == 0 && orientation.compareTo("left") == 0)
+				|| (direction.compareTo(">") == 0 && orientation.compareTo("right") == 0)) {
+			grid[i][j] = "vJ";
 		}
-		if((direction.compareTo("v")==0 && orientation.compareTo("left")==0)||(direction.compareTo("^")==0 && orientation.compareTo("right")==0) ) {
-			grid[i][j]=">J";
+		if ((direction.compareTo("v") == 0 && orientation.compareTo("left") == 0)
+				|| (direction.compareTo("^") == 0 && orientation.compareTo("right") == 0)) {
+			grid[i][j] = ">J";
 		}
-		if((direction.compareTo(">")==0 && orientation.compareTo("left")==0)||(direction.compareTo("<")==0 && orientation.compareTo("right")==0) ) {
-			grid[i][j]="^J";
+		if ((direction.compareTo(">") == 0 && orientation.compareTo("left") == 0)
+				|| (direction.compareTo("<") == 0 && orientation.compareTo("right") == 0)) {
+			grid[i][j] = "^J";
 		}
 		return grid;
-		
+
 	}
 
 	private static boolean checkPosition(int i, int j, String[][] grid) {
 		int n = grid.length;
 		int m = grid[0].length;
 
-		return (i >= 0) && (i < n) && (j >= 0) && (j < m) && grid[i][j].compareTo("W")==0;
+		return (i >= 0) && (i < n) && (j >= 0) && (j < m) && grid[i][j].compareTo("W") == 0;
 	}
 
 	public static void search(String[][] grid, String strategy, boolean visualize) {
 		// itt should create a new SearchProblem of type SaveWesteros and pass it to the
 		// GeneralSearch method together with the input strategy.
-		int counter = 1 ;
+		int counter = 1;
 		SaveWestros problem = new SaveWestros(dragonGlassCapacity, numberOfWhiteWalkers, grid);
 		Node node = generalSearchProcedure(problem, strategy);
 		Stack<Operators> stack = new Stack<>();
-		if(node==null) {
+		if (node == null) {
 			System.out.println("No Solution Could Be Reached In This Grid !!!");
 			return;
 		}
@@ -452,24 +469,22 @@ public class Main {
 		System.out.println();
 		while (!stack.isEmpty()) {
 			Operators action = stack.pop();
-			System.out.print("Action "+counter+++": ");
+			System.out.print("Action " + counter++ + ": ");
 			System.out.println(action);
-		
-			if(visualize) {
-				grid=Visualize(grid, action.toString());
+
+			if (visualize) {
+				grid = Visualize(grid, action.toString());
 				printGrid(grid);
 				System.out.println(new String(new char[40]).replace("\0", "_"));
 				System.out.println();
 			}
-	
+
 		}
-		System.out.println("★★★★★★★★★★★ All The White Walkers Have Been Killed ★★★★★★★★★★★" );
+		System.out.println("★★★★★★★★★★★ All The White Walkers Have Been Killed ★★★★★★★★★★★");
 
 	}
 
 	public static void main(String[] args) {
-
-
 
 		Comparator<Node> nodeComparator = new Comparator<Node>() {
 			@Override
@@ -492,15 +507,21 @@ public class Main {
 					return 1;
 				else if (state1.whiteWalkersLeft < state2.whiteWalkersLeft)
 					return -1;
+				else if (state1.dragonGlass > state2.dragonGlass)
+					return 1;
+				else if (state1.dragonGlass < state2.dragonGlass)
+					return -1;
 				else {
 					loop: for (Position whiteWalker1 : state1.whiteWalkersPositions) {
 						for (Position whiteWalker2 : state2.whiteWalkersPositions) {
 							if (whiteWalker1.compareTo(whiteWalker2) == 0) {
+
 								continue loop;
 							}
 						}
 						return -1;
 					}
+
 					return 0;
 				}
 			}
@@ -509,11 +530,11 @@ public class Main {
 		String[][] grid = GenGrid();
 		System.out.println("The problem is :\n");
 		printGrid(grid);
-		System.out.println(String.format("Number of white walkers: %d Capacity of dragon glass: %d", numberOfWhiteWalkers,dragonGlassCapacity));
+		System.out.println(String.format("Number of white walkers: %d Capacity of dragon glass: %d",
+				numberOfWhiteWalkers, dragonGlassCapacity));
 		System.out.println(new String(new char[40]).replace("\0", "_"));
 
-
-		search(grid, "AS1", true);
+		search(grid, "GR2", true);
 
 		System.out.println(new String(new char[40]).replace("\0", "_"));
 
